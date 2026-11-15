@@ -1,0 +1,183 @@
+/* Turntable — all styles. Sizes follow the 1194×834 landscape reference (docs/DESIGN.md);
+   the whole stage is scaled to fit the screen by app.js. */
+
+:root, [data-theme="parchment"] {
+  --bg:#ddd3c1; --plinth:#b99f7f; --plinth-hi:#c9b292; --arm-base:#b08d57;
+  --text:#28221c; --muted:#5a4e41; --track:#c9bda9; --soft:#d0c5b2;
+  --accent:#6e4b30; --on-accent:#f3ecdf; --shadow:rgba(70,55,35,0.28);
+}
+[data-theme="caramel"] {
+  --bg:#7a5a40; --plinth:#9b7757; --plinth-hi:#ad8a69; --arm-base:#c9a55c;
+  --text:#f6eee2; --muted:#efe2d0; --track:#8f6d51; --soft:#86644a;
+  --accent:#f1e4cf; --on-accent:#5a3f2a; --shadow:rgba(50,30,15,0.35);
+}
+
+* { box-sizing:border-box; }
+[hidden] { display:none !important; }
+html, body { margin:0; height:100%; }
+body {
+  overflow:hidden; background:var(--bg); color:var(--text);
+  font-family:Inter, system-ui, sans-serif;
+  -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none; user-select:none;
+}
+button, select { font:inherit; color:inherit; touch-action:manipulation; }
+button { cursor:pointer; }
+
+/* Fixed-size stage, centred, scaled by --scale (set in app.js) so it fits any iPad. */
+.stage {
+  position:absolute; left:50%; top:50%; width:1194px; height:834px; margin:-417px 0 0 -597px;
+  transform:scale(var(--scale, 1));
+  display:flex; align-items:center; gap:48px; padding:48px;
+}
+
+/* Turntable */
+.plinth {
+  position:relative; width:640px; height:738px; flex:none; border-radius:28px; background:var(--plinth);
+  box-shadow:inset 0 2px 0 var(--plinth-hi), 0 24px 50px var(--shadow);
+}
+.platter {
+  position:absolute; left:32px; top:90px; width:520px; height:520px; padding:0; border:none; border-radius:50%;
+  background:#1a1a1c; box-shadow:0 14px 34px rgba(30,30,40,0.35);
+  display:flex; align-items:center; justify-content:center;
+}
+.record {
+  width:500px; height:500px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:repeating-radial-gradient(circle, #141416 0 2px, #202024 2px 4px);
+}
+
+/* Empty label = neutral brass placeholder; the cover image sits on top when there is one. */
+.label {
+  position:relative; width:220px; height:220px; border-radius:50%; overflow:hidden; background:#c9a55c;
+  display:flex; align-items:center; justify-content:center;
+}
+.label-cover {
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  transition:opacity 300ms ease;
+}
+.label-cover:not([src]) { opacity:0; }
+.spindle {
+  position:relative; width:14px; height:14px; border-radius:50%; background:#e8e6e1; box-shadow:0 0 0 4px #141416;
+}
+
+.arm-base {
+  position:absolute; left:548px; top:78px; width:64px; height:64px; border-radius:50%; background:var(--arm-base);
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.15), 0 6px 14px rgba(30,30,40,.25);
+}
+.arm {
+  position:absolute; left:573px; top:110px; width:14px; height:340px; transform-origin:7px 0;
+  transform:rotate(4deg); transition:transform 700ms ease-in-out; pointer-events:none;
+}
+.is-playing .arm { transform:rotate(24deg); }
+.arm .rod  { width:8px; height:300px; margin-left:3px; border-radius:4px; background:#f7f5f1; box-shadow:0 2px 6px rgba(0,0,0,.2); }
+.arm .head { width:22px; height:40px; margin-left:-4px; border-radius:4px; background:#2a2a2e; }
+
+/* Deliberately low-attention dropdowns ("spin 5s ▾", theme). appearance:none so Safari
+   doesn't draw its grey pill; our own chevron replaces the native one. */
+.quiet-select { position:relative; display:inline-flex; align-items:center; }
+.quiet-select select {
+  -webkit-appearance:none; appearance:none; height:44px; padding:0 16px 0 4px;
+  border:none; background:transparent; color:inherit; font:inherit; cursor:pointer;
+}
+.quiet-select svg { position:absolute; right:2px; pointer-events:none; }
+
+.spin-setting {
+  position:absolute; left:28px; bottom:24px; display:flex; align-items:center; gap:2px;
+  color:var(--muted); font-size:12px;
+}
+
+/* Info column */
+.info { flex:1; min-width:0; display:flex; flex-direction:column; gap:28px; }
+.status { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; letter-spacing:.14em; color:var(--muted); }
+.status .dot { width:8px; height:8px; border-radius:50%; background:var(--accent); }
+h1 {
+  margin:0; font-family:'Space Grotesk', sans-serif; font-size:44px; line-height:1.05; font-weight:700;
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; overflow-wrap:anywhere;
+}
+.sub { margin:10px 0 0; font-size:18px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.bar { height:6px; border-radius:3px; background:var(--track); overflow:hidden; }
+.bar-fill { width:0; height:6px; border-radius:3px; background:var(--accent); }
+.times { display:flex; justify-content:space-between; margin-top:8px; font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+.controls { display:flex; align-items:center; gap:20px; }
+.controls button { padding:0; border:none; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.btn-sm { width:56px; height:56px; background:var(--soft); color:var(--text); }
+.btn-play { width:80px; height:80px; background:var(--accent); color:var(--on-accent); box-shadow:0 10px 24px rgba(30,40,60,.2); }
+.controls button:active { transform:scale(0.95); }
+.controls button:disabled { opacity:.4; cursor:default; transform:none; }
+.icon-pause { display:none; }
+.is-playing .icon-pause { display:block; }
+.is-playing .icon-play { display:none; }
+
+.next { display:flex; align-items:center; gap:16px; padding:16px; border-radius:18px; background:var(--soft); }
+.next .cover { width:60px; height:60px; flex:none; border-radius:10px; object-fit:cover; background:var(--track); }
+.next-text { min-width:0; }
+.next small { font-size:12px; font-weight:600; letter-spacing:.14em; color:var(--muted); }
+.next strong, .next span { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.next strong { font-size:17px; margin:4px 0 2px; }
+.next span { font-size:14px; color:var(--muted); }
+
+.toast {
+  position:absolute; left:50%; bottom:28px; transform:translateX(-50%);
+  padding:12px 22px; border-radius:999px; background:var(--text); color:var(--bg);
+  font-size:15px; font-weight:500; white-space:nowrap; box-shadow:0 10px 24px var(--shadow);
+}
+
+/* Settings menu: a faint "…" in the corner; holds theme now, Log out from Phase 2. */
+.menu { position:absolute; top:16px; right:16px; }
+.menu-btn {
+  width:44px; height:44px; padding:0; border:none; border-radius:50%; background:transparent;
+  color:var(--muted); opacity:.55; display:flex; align-items:center; justify-content:center;
+}
+.menu-btn[aria-expanded="true"] { opacity:1; }
+.menu-panel {
+  position:absolute; right:0; top:50px; min-width:220px; padding:4px 16px; border-radius:14px;
+  background:var(--soft); color:var(--text); font-size:14px; box-shadow:0 12px 30px var(--shadow);
+}
+.menu-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.menu-row + .menu-row { border-top:1px solid var(--track); }
+.menu-action {
+  width:100%; height:44px; padding:0; border:none; background:transparent; text-align:left;
+  color:inherit; font-weight:500;
+}
+
+/* Login (mockups/login.html) — same theme tokens as the player */
+.stage.login { gap:80px; padding:64px 96px; }
+.login-art { position:relative; width:460px; height:460px; flex:none; }
+.login-disc {
+  position:absolute; left:120px; top:30px; width:400px; height:400px; border-radius:50%;
+  background:repeating-radial-gradient(circle, #141416 0 2px, #202024 2px 4px);
+  display:flex; align-items:center; justify-content:center;
+}
+.login-disc span {
+  width:140px; height:140px; border-radius:50%; background:#c9a55c;
+  display:flex; align-items:center; justify-content:center;
+}
+.login-disc span::after { content:""; width:14px; height:14px; border-radius:50%; background:#141416; }
+.login-sleeve {
+  position:absolute; left:0; top:30px; width:400px; height:400px; border-radius:12px; background:var(--plinth);
+  box-shadow:20px 0 40px rgba(50,35,20,.3);
+  display:flex; flex-direction:column; justify-content:flex-end; gap:8px; padding:36px;
+}
+.login-sleeve b { font-family:'Space Grotesk', sans-serif; font-size:40px; line-height:1; }
+.login-sleeve small { font-size:15px; }
+.login-copy { flex:1; min-width:0; display:flex; flex-direction:column; gap:32px; }
+.login-title { -webkit-line-clamp:unset; font-size:48px; }
+.login-lede { margin:14px 0 0; font-size:18px; line-height:1.5; color:var(--muted); }
+.cta {
+  display:flex; align-items:center; justify-content:center; gap:12px; width:100%; height:60px; max-width:380px;
+  border:none; border-radius:999px; background:var(--accent); color:var(--on-accent); font:600 17px Inter, sans-serif;
+}
+.cta:disabled { opacity:.6; cursor:default; }
+.login-error { margin:12px 0 0; font-size:15px; color:var(--text); }
+.trust {
+  list-style:none; margin:0; padding:24px 0 0; border-top:1px solid var(--track);
+  display:flex; flex-direction:column; gap:14px;
+}
+.trust li { display:flex; align-items:center; gap:12px; font-size:15px; }
+.trust svg { flex:none; color:var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .arm, .label-cover { transition:none; }
+}

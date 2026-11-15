@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en" data-theme="parchment">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Only our own files, Google Fonts and Spotify are allowed to load (security rule 8). -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https://i.scdn.co; connect-src 'self' https://api.spotify.com https://accounts.spotify.com">
+<meta name="theme-color" content="#ddd3c1">
+<title>Turntable</title>
+<!-- Home-screen app: opens full screen, with our own name and icon. -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Turntable">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <!-- Both views start hidden; app.js shows one once it knows whether we're logged in. -->
+  <main class="stage login" id="login" hidden>
+    <div class="login-art" aria-hidden="true">
+      <div class="login-disc"><span></span></div>
+      <div class="login-sleeve"><b>Turntable</b><small>for your Spotify library</small></div>
+    </div>
+    <div class="login-copy">
+      <div>
+        <h1 class="login-title">Put your music on a record.</h1>
+        <p class="login-lede">Play anything in Spotify on your phone or speaker. This iPad shows it spinning.</p>
+      </div>
+      <div>
+        <button class="cta" id="login-btn" type="button">Continue with Spotify
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </button>
+        <p class="login-error" id="login-error" role="alert" hidden></p>
+      </div>
+      <ul class="trust">
+        <li><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>You sign in on Spotify's own page. Turntable never sees your password.</li>
+        <li><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>It can see what's playing and play, pause or skip. Nothing else.</li>
+        <li><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>Disconnect anytime in your Spotify account settings.</li>
+      </ul>
+    </div>
+  </main>
+
+  <main class="stage" id="player" hidden>
+    <section class="plinth" aria-label="Turntable">
+      <button class="platter" id="platter" type="button" aria-label="Tap the record to pause">
+        <div class="record" id="record">
+          <div class="label" id="label">
+            <img class="label-cover" id="cover" alt="">
+            <span class="spindle"></span>
+          </div>
+        </div>
+      </button>
+      <div class="arm-base" aria-hidden="true"></div>
+      <div class="arm" aria-hidden="true"><div class="rod"></div><div class="head"></div></div>
+      <div class="spin-setting">
+        <label for="spin">spin</label>
+        <span class="quiet-select">
+          <select id="spin" aria-label="Seconds per turn">
+            <option value="1">1s</option>
+            <option value="3">3s</option>
+            <option value="5" selected>5s</option>
+            <option value="7">7s</option>
+            <option value="10">10s</option>
+          </select>
+          <svg aria-hidden="true" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </span>
+      </div>
+    </section>
+
+    <section class="info">
+      <div class="status"><span class="dot"></span><span id="status"></span></div>
+      <div>
+        <h1 id="title"></h1>
+        <p class="sub" id="subtitle"></p>
+      </div>
+      <div>
+        <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+        <div class="times"><span id="elapsed">0:00</span><span id="duration">0:00</span></div>
+      </div>
+      <div class="controls">
+        <button class="btn-sm" id="prev" type="button" aria-label="Previous track">
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20L9 12l10-8v16z"/><path d="M5 19V5"/></svg>
+        </button>
+        <button class="btn-play" id="play" type="button" aria-label="Pause">
+          <svg class="icon-pause" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14"/><path d="M16 5v14"/></svg>
+          <svg class="icon-play" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5l11 7-11 7z"/></svg>
+        </button>
+        <button class="btn-sm" id="next" type="button" aria-label="Next track">
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l10 8-10 8V4z"/><path d="M19 5v14"/></svg>
+        </button>
+      </div>
+      <div class="next" id="up-next" hidden>
+        <img class="cover" id="next-cover" alt="">
+        <div class="next-text">
+          <small>UP NEXT</small>
+          <strong id="next-title"></strong>
+          <span id="next-artist"></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    <div class="menu">
+      <button class="menu-btn" id="menu-btn" type="button" aria-label="Settings" aria-expanded="false" aria-controls="menu-panel">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+      </button>
+      <div class="menu-panel" id="menu-panel" hidden>
+        <div class="menu-row">
+          <label for="theme">Theme</label>
+          <span class="quiet-select">
+            <select id="theme">
+              <option value="parchment">Parchment</option>
+              <option value="caramel">Caramel</option>
+            </select>
+            <svg aria-hidden="true" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </span>
+        </div>
+        <div class="menu-row">
+          <button class="menu-action" id="logout-btn" type="button">Log out</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

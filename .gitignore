@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Secrets / local env — never commit (tokens live only in the browser's localStorage)
+.env
+.env.*
+*.local
+
+# Editor
+.vscode/
+.idea/

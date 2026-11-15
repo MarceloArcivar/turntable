@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MOCKUP — Turntable login</title>
+<!--
+  Design reference for the first-launch / login screen, shown in the Parchment theme.
+  In the real app it uses the same theme tokens as the player (docs/DESIGN.md).
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#ddd3c1; --sleeve:#b99f7f; --text:#28221c; --muted:#5a4e41; --line:#c9bda9; --accent:#6e4b30; --on-accent:#f3ecdf; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#8a8580; font-family:Inter, sans-serif; }
+  .screen { width:1194px; height:834px; border-radius:24px; background:var(--bg); color:var(--text);
+            display:flex; align-items:center; gap:80px; padding:64px 96px; }
+  .art { position:relative; width:460px; height:460px; flex:none; }
+  .disc { position:absolute; left:120px; top:30px; width:400px; height:400px; border-radius:50%;
+          background:repeating-radial-gradient(circle, #141416 0 2px, #202024 2px 4px); display:flex; align-items:center; justify-content:center; }
+  .disc span { width:140px; height:140px; border-radius:50%; background:#c9a55c; display:flex; align-items:center; justify-content:center; }
+  .disc span::after { content:""; width:14px; height:14px; border-radius:50%; background:#141416; }
+  .sleeve { position:absolute; left:0; top:30px; width:400px; height:400px; border-radius:12px; background:var(--sleeve);
+            box-shadow:20px 0 40px rgba(50,35,20,.3); display:flex; flex-direction:column; justify-content:flex-end; gap:8px; padding:36px; }
+  .sleeve b { font-family:'Space Grotesk', sans-serif; font-size:40px; line-height:1; }
+  .sleeve small { font-size:15px; color:var(--text); }
+  .copy { flex:1; min-width:0; display:flex; flex-direction:column; gap:32px; }
+  h1 { margin:0; font-family:'Space Grotesk', sans-serif; font-size:48px; line-height:1.05; }
+  p { margin:14px 0 0; font-size:18px; line-height:1.5; color:var(--muted); }
+  .cta { display:flex; align-items:center; justify-content:center; gap:12px; height:60px; max-width:380px; border:none; border-radius:999px;
+         background:var(--accent); color:var(--on-accent); font:600 17px Inter, sans-serif; cursor:pointer; }
+  ul { list-style:none; margin:0; padding:24px 0 0; border-top:1px solid var(--line); display:flex; flex-direction:column; gap:14px; }
+  li { display:flex; align-items:center; gap:12px; font-size:15px; }
+  li svg { flex:none; color:var(--accent); }
+</style>
+</head>
+<body>
+  <main class="screen">
+    <div class="art" aria-hidden="true">
+      <div class="disc"><span></span></div>
+      <div class="sleeve"><b>Turntable</b><small>for your Spotify library</small></div>
+    </div>
+    <div class="copy">
+      <div>
+        <h1>Put your music on a record.</h1>
+        <p>Play anything in Spotify on your phone or speaker. This iPad shows it spinning.</p>
+      </div>
+      <button class="cta">Continue with Spotify
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+      </button>
+      <ul>
+        <li><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>You sign in on Spotify's own page. Turntable never sees your password.</li>
+        <li><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>It can see what's playing and play, pause or skip. Nothing else.</li>
+        <li><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>Disconnect anytime in your Spotify account settings.</li>
+      </ul>
+    </div>
+  </main>
+</body>
+</html>
