@@ -5,12 +5,14 @@ const els = {};
 let spin = null;          // Web Animation that rotates the record
 let spinMs = 5000;        // milliseconds per full turn
 let playing = false;
+let coverUrl = null;      // cover currently on (or fading onto) the label
+let frontCover = 0;       // which of the two label layers is on top
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 export function initPlayerUI() {
-  for (const id of ['player', 'record', 'cover', 'platter', 'play', 'status', 'title', 'subtitle',
+  for (const id of ['player', 'record', 'cover-a', 'cover-b', 'platter', 'play', 'status', 'title', 'subtitle',
     'bar-fill', 'elapsed', 'duration', 'up-next', 'next-cover', 'next-title', 'next-artist', 'prev', 'next',
-    'toast']) {
+    'toast', 'offline']) {
     els[id] = document.getElementById(id);
   }
 
@@ -28,8 +30,7 @@ export function renderTrack(track, { canSkip = true } = {}) {
   els.title.textContent = track.title;
   els.subtitle.textContent = [track.artist, track.album].filter(Boolean).join(' · ');
   els.duration.textContent = formatTime(track.durationMs);
-  if (track.coverUrl) els.cover.src = track.coverUrl;
-  else els.cover.removeAttribute('src');
+  setCover(track.coverUrl);
   els.prev.disabled = !canSkip;
   els.next.disabled = !canSkip;
 }
@@ -41,7 +42,7 @@ export function renderIdle() {
   els.title.textContent = 'Nothing playing';
   els.subtitle.textContent = 'Start music in Spotify on any device.';
   els.duration.textContent = formatTime(0);
-  els.cover.removeAttribute('src');
+  setCover(null);
   els.prev.disabled = true;
   els.next.disabled = true;
   renderProgress(0, 0);
@@ -74,6 +75,11 @@ export function setPlaying(isPlaying) {
   updateSpin();
 }
 
+// Tiny "· offline" next to the status while Spotify can't be reached.
+export function setOffline(isOffline) {
+  els.offline.hidden = !isOffline;
+}
+
 // Short message at the bottom of the screen that disappears on its own.
 let toastTimer = null;
 export function showToast(message) {
@@ -96,6 +102,34 @@ export function setTheme(name) {
   document.documentElement.dataset.theme = name;
   const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
   document.querySelector('meta[name="theme-color"]').setAttribute('content', bg);
+}
+
+// Fades the new cover in on top of the old one once it has loaded, so the label never
+// flashes empty between songs. null fades back to the plain brass label.
+function setCover(url) {
+  if (url === coverUrl) return;
+  coverUrl = url;
+  const layers = [els['cover-a'], els['cover-b']];
+  if (!url) {
+    layers.forEach((layer) => layer.classList.remove('is-shown'));
+    return;
+  }
+  const incomingIndex = 1 - frontCover;
+  const incoming = layers[incomingIndex];
+  const outgoing = layers[frontCover];
+
+  const reveal = () => {
+    if (coverUrl !== url) return;   // a newer song arrived while this one loaded
+    outgoing.classList.remove('is-front');
+    incoming.classList.add('is-front', 'is-shown');
+    frontCover = incomingIndex;
+    // Once the new cover fully covers the old one, clear the old layer.
+    setTimeout(() => { if (frontCover === incomingIndex) outgoing.classList.remove('is-shown'); }, 300);
+  };
+  incoming.onload = reveal;
+  incoming.onerror = null;          // a broken image just leaves the previous cover up
+  if (incoming.src === url && incoming.complete) reveal();   // same image again: no new load event
+  else incoming.src = url;
 }
 
 function updateSpin() {

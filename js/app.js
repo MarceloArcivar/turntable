@@ -1,7 +1,7 @@
 // Startup and wiring: login vs player view, settings, polling Spotify for what's playing,
 // playback controls and the Up next card.
 
-import { initPlayerUI, renderTrack, renderIdle, renderUpNext, renderProgress, setPlaying, setSpinSeconds, setTheme, showToast } from './player-ui.js';
+import { initPlayerUI, renderTrack, renderIdle, renderUpNext, renderProgress, setPlaying, setSpinSeconds, setTheme, showToast, setOffline } from './player-ui.js';
 import { login, logout, handleRedirect, isLoggedIn, AuthError } from './auth.js';
 import { getCurrentlyPlaying, getQueue, play, pause, skipToNext, skipToPrevious, RateLimitError, ApiError } from './spotify.js';
 
@@ -73,6 +73,7 @@ async function poll() {
   const seq = actionSeq;
   try {
     const playback = await getCurrentlyPlaying();
+    setOffline(false);
     if (seq === actionSeq) applyPlayback(playback);
     else delay = CONFIRM_MS;
   } catch (error) {
@@ -89,7 +90,8 @@ async function poll() {
       return;
     }
     if (error instanceof RateLimitError) delay = error.retryAfterSeconds * 1000;
-    // Anything else (offline, Spotify hiccup): keep showing the last state and try again later.
+    // fetch() itself failing means no connection; keep the last state and keep retrying.
+    else if (!(error instanceof ApiError)) setOffline(true);
   } finally {
     pollInFlight = false;
   }
@@ -196,9 +198,11 @@ function saveSetting(key, value) {
   try { localStorage.setItem(key, value); } catch { /* ignore */ }
 }
 
-// Scale the fixed 1194×834 design to fill the screen without distorting it.
+// Scale the fixed design (1194×834 landscape, 834×1194 portrait) to fill the screen without distorting it.
+const portrait = window.matchMedia('(orientation: portrait)');
 function fitStage() {
-  const scale = Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
+  const [w, h] = portrait.matches ? [STAGE_H, STAGE_W] : [STAGE_W, STAGE_H];
+  const scale = Math.min(window.innerWidth / w, window.innerHeight / h);
   document.documentElement.style.setProperty('--scale', scale);
 }
 
@@ -287,6 +291,7 @@ async function route() {
 function start() {
   fitStage();
   window.addEventListener('resize', fitStage);
+  portrait.addEventListener('change', fitStage);
 
   initPlayerUI();
   wireSettings();
@@ -305,6 +310,9 @@ function start() {
     if (document.hidden) clearTimeout(pollTimer);
     else if (polling) poll();
   });
+  // Back online: don't wait for the next 5-second check.
+  window.addEventListener('online', () => { if (polling) poll(); });
+  window.addEventListener('offline', () => setOffline(true));
 }
 
 start();

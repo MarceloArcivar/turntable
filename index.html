@@ -52,7 +52,9 @@
       <button class="platter" id="platter" type="button" aria-label="Tap the record to pause">
         <div class="record" id="record">
           <div class="label" id="label">
-            <img class="label-cover" id="cover" alt="">
+            <!-- Two layers so a new cover can fade in over the old one. -->
+            <img class="label-cover" id="cover-a" alt="">
+            <img class="label-cover" id="cover-b" alt="">
             <span class="spindle"></span>
           </div>
         </div>
@@ -75,7 +77,7 @@
     </section>
 
     <section class="info">
-      <div class="status"><span class="dot"></span><span id="status"></span></div>
+      <div class="status"><span class="dot"></span><span id="status"></span><span class="offline" id="offline" hidden>· offline</span></div>
       <div>
         <h1 id="title"></h1>
         <p class="sub" id="subtitle"></p>

@@ -4,6 +4,8 @@ An iPad web app that shows what you're playing on Spotify as a spinning vinyl re
 album cover on the label, tonearm, title, progress, controls and what's up next.
 Tap the record to pause or play.
 
+Live: https://marceloarcivar.github.io/turntable/
+
 - Plain HTML/CSS/JS, no framework
 - Spotify Web API with Authorization Code + PKCE (no client secret, no backend)
 - Hosted on GitHub Pages, installed on the iPad as a home-screen app

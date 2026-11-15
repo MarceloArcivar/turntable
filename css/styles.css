@@ -53,11 +53,12 @@ button { cursor:pointer; }
 }
 .label-cover {
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-  transition:opacity 300ms ease;
+  opacity:0; transition:opacity 300ms ease;
 }
-.label-cover:not([src]) { opacity:0; }
+.label-cover.is-shown { opacity:1; }
+.label-cover.is-front { z-index:1; }
 .spindle {
-  position:relative; width:14px; height:14px; border-radius:50%; background:#e8e6e1; box-shadow:0 0 0 4px #141416;
+  position:relative; z-index:2; width:14px; height:14px; border-radius:50%; background:#e8e6e1; box-shadow:0 0 0 4px #141416;
 }
 
 .arm-base {
@@ -90,6 +91,7 @@ button { cursor:pointer; }
 .info { flex:1; min-width:0; display:flex; flex-direction:column; gap:28px; }
 .status { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; letter-spacing:.14em; color:var(--muted); }
 .status .dot { width:8px; height:8px; border-radius:50%; background:var(--accent); }
+.status .offline { font-weight:500; letter-spacing:.08em; text-transform:lowercase; opacity:.8; }
 h1 {
   margin:0; font-family:'Space Grotesk', sans-serif; font-size:44px; line-height:1.05; font-weight:700;
   display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; overflow-wrap:anywhere;
@@ -125,7 +127,7 @@ h1 {
 }
 
 /* Settings menu: a faint "…" in the corner; holds theme now, Log out from Phase 2. */
-.menu { position:absolute; top:16px; right:16px; }
+.menu { position:absolute; top:36px; right:24px; }
 .menu-btn {
   width:44px; height:44px; padding:0; border:none; border-radius:50%; background:transparent;
   color:var(--muted); opacity:.55; display:flex; align-items:center; justify-content:center;
@@ -177,6 +179,19 @@ h1 {
 }
 .trust li { display:flex; align-items:center; gap:12px; font-size:15px; }
 .trust svg { flex:none; color:var(--accent); }
+
+/* Portrait: same stage idea at 834×1194, turntable on top and info below.
+   app.js switches the scale reference with the same media query. */
+@media (orientation: portrait) {
+  .stage { width:834px; height:1194px; margin:-597px 0 0 -417px; flex-direction:column; justify-content:center; gap:40px; }
+  .plinth { zoom:0.8; }
+  .spin-setting { zoom:1.25; }                    /* undo the plinth zoom: keep text size and 44px target */
+  .info { flex:none; width:100%; gap:24px; }
+
+  .stage.login { gap:56px; padding:64px 72px; }
+  .login-art { width:520px; }                     /* include the disc peeking out so the art is centred */
+  .login-copy { flex:none; width:100%; max-width:600px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .arm, .label-cover { transition:none; }
